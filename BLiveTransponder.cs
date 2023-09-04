@@ -14,9 +14,9 @@ public partial class BLiveTransponder : Control
 {
     private readonly BLiveApi _api = new();
     private RichTextLabel _label;
+    private Panel _loginPanel;
     private string _qrcodeKey;
     private TextureButton _qrTextureButton;
-    private Panel _loginPanel;
 
     public override async void _Ready()
     {
@@ -46,7 +46,6 @@ public partial class BLiveTransponder : Control
     private static void OpSendSmsReplyEvent(object sender, (string cmd, string hitCmd, JObject rawData) e)
     {
         Console.WriteLine($"{e.cmd}");
-        
     }
 
     public override void _Process(double delta)
