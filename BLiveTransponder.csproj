@@ -1,0 +1,15 @@
+<Project Sdk="Godot.NET.Sdk/4.1.1">
+    <PropertyGroup>
+        <TargetFramework>net6.0</TargetFramework>
+        <EnableDynamicLoading>true</EnableDynamicLoading>
+    </PropertyGroup>
+    <ItemGroup>
+        <Reference Include="BLiveAPI">
+            <HintPath>..\..\..\RiderProjects\BLiveAPI\bin\Release\BLiveAPI.dll</HintPath>
+        </Reference>
+    </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="Newtonsoft.Json" Version="13.0.3"/>
+        <PackageReference Include="QRCoder" Version="1.4.3"/>
+    </ItemGroup>
+</Project>

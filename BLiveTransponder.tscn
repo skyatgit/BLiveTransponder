@@ -1,0 +1,48 @@
+[gd_scene load_steps=2 format=3 uid="uid://chwtel7hvgv24"]
+
+[ext_resource type="Script" path="res://BLiveTransponder.cs" id="1_t6hwi"]
+
+[node name="BLiveTransponder" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_t6hwi")
+
+[node name="RichTextLabel" type="RichTextLabel" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+scroll_following = true
+
+[node name="LoginPanel" type="Panel" parent="."]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -160.0
+offset_top = -239.0
+offset_right = 160.0
+offset_bottom = 239.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="QrTextureButton" type="TextureButton" parent="LoginPanel"]
+custom_minimum_size = Vector2(160, 160)
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -80.0
+offset_right = 80.0
+offset_bottom = 160.0
+grow_horizontal = 2
+
+[connection signal="pressed" from="LoginPanel/QrTextureButton" to="." method="RefreshQr"]
