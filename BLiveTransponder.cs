@@ -8,6 +8,7 @@ namespace BLiveTransponder;
 public partial class BLiveTransponder : Control
 {
     private readonly BLiveApi _api = new();
+    private readonly BLiveWebSocketServer _bLiveWebSocketServer = new();
     private CheckButton _connectCheckButton;
     private RichTextLabel _label;
     private LoginPanel _loginPanel;
@@ -88,10 +89,10 @@ public partial class BLiveTransponder : Control
         _label.AddText($"{e.userName}:{e.msg}\n");
     }
 
-    [TargetCmd("OTHERS")]
-    private static void OpSendSmsReplyEvent(object sender, (string cmd, string hitCmd, JObject rawData) e)
+    [TargetCmd("ALL")]
+    private void OpSendSmsReplyEvent(object sender, (string cmd, string hitCmd, JObject rawData) e)
     {
-        Console.WriteLine($"{e.cmd}");
+        _bLiveWebSocketServer.SendMessage(e.rawData.ToString());
     }
 
     public override void _Process(double delta)
