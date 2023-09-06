@@ -103,18 +103,29 @@ grow_horizontal = 2
 ignore_texture_size = true
 stretch_mode = 0
 
-[node name="Button" type="Button" parent="LoginPanel"]
+[node name="CancelButton" type="Button" parent="LoginPanel"]
 layout_mode = 1
 anchors_preset = -1
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_top = -80.0
+offset_top = -85.0
+offset_bottom = -45.0
 grow_horizontal = 2
 grow_vertical = 0
 text = "游客登录"
 
+[node name="ReturnButton" type="Button" parent="LoginPanel"]
+layout_mode = 1
+anchors_preset = -1
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -40.0
+text = "返回"
+
 [connection signal="toggled" from="TopColorRect/ConnectCheckButton" to="." method="Toggled"]
 [connection signal="pressed" from="TopColorRect/UserLinkButton" to="LoginPanel" method="SwitchUi"]
 [connection signal="pressed" from="LoginPanel/QrTextureButton" to="LoginPanel" method="RefreshQr"]
-[connection signal="pressed" from="LoginPanel/Button" to="LoginPanel" method="CancelLogin"]
+[connection signal="pressed" from="LoginPanel/CancelButton" to="LoginPanel" method="CancelLogin"]
+[connection signal="pressed" from="LoginPanel/ReturnButton" to="LoginPanel" method="HideUi"]
