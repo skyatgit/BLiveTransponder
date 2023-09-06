@@ -13,12 +13,12 @@ public partial class BLiveTransponder : Control
     private RichTextLabel _label;
     private LoginPanel _loginPanel;
     private LineEdit _roomIdLineEdit;
-    private TextureButton _userTextureButton;
+    private LinkButton _userLinkButton;
 
     public override void _Ready()
     {
         _label = GetNode("RichTextLabel") as RichTextLabel;
-        _userTextureButton = GetNode("TopColorRect/UserTextureButton") as TextureButton;
+        _userLinkButton = GetNode("TopColorRect/UserLinkButton") as LinkButton;
         _loginPanel = GetNode("LoginPanel") as LoginPanel;
         _connectCheckButton = GetNode("TopColorRect/ConnectCheckButton") as CheckButton;
         _roomIdLineEdit = GetNode("TopColorRect/RoomIdLineEdit") as LineEdit;
@@ -73,7 +73,7 @@ public partial class BLiveTransponder : Control
         {
             _roomIdLineEdit.Editable = false;
             _connectCheckButton.Disabled = true;
-            _userTextureButton.Disabled = true;
+            _userLinkButton.Disabled = true;
             _loginPanel.HideUi();
             _connectCheckButton.Text = "连接中";
         }
@@ -81,7 +81,7 @@ public partial class BLiveTransponder : Control
         {
             _roomIdLineEdit.Editable = true;
             _connectCheckButton.Disabled = false;
-            _userTextureButton.Disabled = false;
+            _userLinkButton.Disabled = false;
             _connectCheckButton.Text = "未连接";
             _connectCheckButton.SetPressedNoSignal(false);
         }

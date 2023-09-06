@@ -11,7 +11,7 @@ namespace BLiveTransponder;
 
 public static class BLiveBase
 {
-    public static (int, string) GetQrResult(string qrcodeKey)
+    public static (int, string, string) GetQrResult(string qrcodeKey)
     {
         try
         {
@@ -21,8 +21,7 @@ public static class BLiveBase
             var code = (int)jsonResult?["data"]?["code"];
             var url = (string)jsonResult?["data"]?["url"];
             var refreshToken = (string)jsonResult?["data"]?["refresh_token"];
-            Console.WriteLine($"{code},{url},{refreshToken}");
-            return (code, url);
+            return (code, url, refreshToken);
         }
         catch (ArgumentException)
         {

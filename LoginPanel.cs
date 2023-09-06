@@ -8,12 +8,15 @@ public partial class LoginPanel : Panel
     private double _coolDown;
     private string _qrcodeKey;
     private TextureButton _qrTextureButton;
+    private LinkButton _userLinkButton;
     internal string Sessdata;
 
     public override void _Ready()
     {
         HideUi();
         _qrTextureButton = GetNode("QrTextureButton") as TextureButton;
+        _userLinkButton = GetNode("../TopColorRect/UserLinkButton") as LinkButton;
+        LoadCookie();
     }
 
     private void SwitchUi()
@@ -35,12 +38,11 @@ public partial class LoginPanel : Panel
     {
         Visible = false;
         _qrcodeKey = null;
-        _coolDown = 0;
     }
 
     private void CancelLogin()
     {
-        Sessdata = null;
+        SetCookie(null, null);
         HideUi();
     }
 
@@ -57,17 +59,32 @@ public partial class LoginPanel : Panel
         _coolDown += delta;
         if (_coolDown < 1) return;
         _coolDown = 0;
-        var (code, url) = BLiveBase.GetQrResult(_qrcodeKey);
+        var (code, url, refreshToken) = BLiveBase.GetQrResult(_qrcodeKey);
         switch (code)
         {
             case 0:
                 HideUi();
                 var match = Regex.Match(url, @"SESSDATA=(.+?)&");
-                Sessdata = match.Groups[1].Value;
+                SetCookie(match.Groups[1].Value, refreshToken);
                 return;
             case 86038:
                 RefreshQr();
                 break;
         }
+    }
+
+    private void SetCookie(string sessdata, string refreshToken)
+    {
+        //TODO 通过refreshToken刷新Cookie
+        var userName = BLiveBase.GetMyInfo(sessdata);
+        Sessdata = userName is null ? null : sessdata;
+        _userLinkButton.Text = userName is null ? "未登录:游客" : $"已登录:{userName}";
+        BLiveConfig.SaveCookie(userName is null ? null : sessdata, userName is null ? null : refreshToken);
+    }
+
+    private void LoadCookie()
+    {
+        var (sessdata, refreshToken) = BLiveConfig.GetCookie();
+        SetCookie(sessdata, refreshToken);
     }
 }

@@ -13,9 +13,22 @@ public static class BLiveConfig
         return Config.GetValue("config", "roomId", 0).AsUInt64();
     }
 
+    public static (string, string) GetCookie()
+    {
+        Config.Load(Path);
+        return (Config.GetValue("Cookie", "sessdata", "").AsString(), Config.GetValue("Cookie", "refreshToken", "").AsString());
+    }
+
     public static void SaveRoomId(ulong roomId)
     {
         Config.SetValue("config", "roomId", roomId);
+        Config.Save(Path);
+    }
+
+    public static void SaveCookie(string sessdata, string refreshToken)
+    {
+        Config.SetValue("Cookie", "sessdata", sessdata);
+        Config.SetValue("Cookie", "refreshToken", refreshToken);
         Config.Save(Path);
     }
 }

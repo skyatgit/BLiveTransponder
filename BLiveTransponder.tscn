@@ -1,7 +1,6 @@
-[gd_scene load_steps=4 format=3 uid="uid://chwtel7hvgv24"]
+[gd_scene load_steps=3 format=3 uid="uid://chwtel7hvgv24"]
 
 [ext_resource type="Script" path="res://BLiveTransponder.cs" id="1_t6hwi"]
-[ext_resource type="Texture2D" uid="uid://crt2jg5ki3x50" path="res://icon.svg" id="2_dxi1o"]
 [ext_resource type="Script" path="res://LoginPanel.cs" id="3_b4f48"]
 
 [node name="BLiveTransponder" type="Control"]
@@ -50,19 +49,18 @@ focus_mode = 0
 text = "未连接"
 metadata/_edit_lock_ = true
 
-[node name="UserTextureButton" type="TextureButton" parent="TopColorRect"]
+[node name="UserLinkButton" type="LinkButton" parent="TopColorRect"]
 layout_mode = 1
 anchors_preset = -1
 anchor_left = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = -40.0
 offset_top = 5.0
-offset_right = -10.0
+offset_right = -5.0
 offset_bottom = -5.0
-texture_normal = ExtResource("2_dxi1o")
-ignore_texture_size = true
-stretch_mode = 0
+grow_horizontal = 0
+text = "未登录:游客"
+underline = 1
 metadata/_edit_lock_ = true
 
 [node name="RichTextLabel" type="RichTextLabel" parent="."]
@@ -75,6 +73,7 @@ offset_top = 50.0
 offset_right = -10.0
 offset_bottom = -10.0
 scroll_following = true
+metadata/_edit_lock_ = true
 
 [node name="LoginPanel" type="Panel" parent="."]
 layout_mode = 1
@@ -84,9 +83,9 @@ anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
 offset_left = -80.0
-offset_top = -239.0
+offset_top = -170.0
 offset_right = 80.0
-offset_bottom = 239.0
+offset_bottom = 90.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("3_b4f48")
@@ -116,6 +115,6 @@ grow_vertical = 0
 text = "游客登录"
 
 [connection signal="toggled" from="TopColorRect/ConnectCheckButton" to="." method="Toggled"]
-[connection signal="pressed" from="TopColorRect/UserTextureButton" to="LoginPanel" method="SwitchUi"]
+[connection signal="pressed" from="TopColorRect/UserLinkButton" to="LoginPanel" method="SwitchUi"]
 [connection signal="pressed" from="LoginPanel/QrTextureButton" to="LoginPanel" method="RefreshQr"]
 [connection signal="pressed" from="LoginPanel/Button" to="LoginPanel" method="CancelLogin"]
