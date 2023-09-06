@@ -25,6 +25,8 @@ public partial class BLiveTransponder : Control
         _api.OpSendSmsReply += OpSendSmsReplyEvent;
         _api.OpAuthReply += OpAuthReplyEvent;
         _api.DanmuMsg += DanmuMsgEvent;
+        var roomId = BLiveConfig.GetRoomId();
+        if (roomId != 0) _roomIdLineEdit!.Text = roomId.ToString();
     }
 
     private void OpAuthReplyEvent(object sender, (JObject authReply, ulong? roomId, byte[] rawData) e)
@@ -44,17 +46,18 @@ public partial class BLiveTransponder : Control
             {
                 try
                 {
+                    BLiveConfig.SaveRoomId(roomId);
                     await _api.Connect(roomId, 3, _loginPanel.Sessdata);
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine(e);
+                    _label.AddText($"{e.Message}\n");
                     SetConnectStatus(false);
                 }
             }
             else
             {
-                _roomIdLineEdit.Clear();
+                _label.AddText("无效的房间号\n");
                 SetConnectStatus(false);
             }
         }

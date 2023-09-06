@@ -4,16 +4,16 @@
         <EnableDynamicLoading>true</EnableDynamicLoading>
     </PropertyGroup>
     <ItemGroup>
-        <Reference Include="BLiveAPI">
-            <HintPath>..\..\..\RiderProjects\BLiveAPI\bin\Release\BLiveAPI.dll</HintPath>
-        </Reference>
-    </ItemGroup>
-    <ItemGroup>
         <PackageReference Include="Newtonsoft.Json" Version="13.0.3"/>
         <PackageReference Include="QRCoder" Version="1.4.3"/>
     </ItemGroup>
     <ItemGroup>
         <Content Include="LICENSE"/>
         <Content Include="README.md"/>
+    </ItemGroup>
+    <ItemGroup>
+        <Reference Include="BLiveAPI">
+            <HintPath>BLiveAPI\BLiveAPI.dll</HintPath>
+        </Reference>
     </ItemGroup>
 </Project>

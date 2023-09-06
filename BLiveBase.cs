@@ -20,6 +20,8 @@ public static class BLiveBase
             var jsonResult = (JObject)JsonConvert.DeserializeObject(result);
             var code = (int)jsonResult?["data"]?["code"];
             var url = (string)jsonResult?["data"]?["url"];
+            var refreshToken = (string)jsonResult?["data"]?["refresh_token"];
+            Console.WriteLine($"{code},{url},{refreshToken}");
             return (code, url);
         }
         catch (ArgumentException)
