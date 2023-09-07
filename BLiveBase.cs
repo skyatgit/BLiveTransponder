@@ -82,4 +82,38 @@ public static class BLiveBase
             throw new NetworkException();
         }
     }
+
+    public static bool RefreshCookie(ref string sessdata, ref string refreshToken)
+    {
+        const string cookieInfoUrl = "https://passport.bilibili.com/x/passport-login/web/cookie/info";
+        try
+        {
+            var client = new HttpClient(new HttpClientHandler { UseCookies = false });
+            client.DefaultRequestHeaders.Add("Cookie", $"SESSDATA={sessdata}");
+            var cookieInfo = client.GetStringAsync(cookieInfoUrl).Result;
+            var cookieInfoJsonResult = (JObject)JsonConvert.DeserializeObject(cookieInfo);
+            var refresh = (bool?)cookieInfoJsonResult?.SelectToken("data.refresh");
+            switch (refresh)
+            {
+                case null:
+                    (sessdata, refreshToken) = (null, null);
+                    break;
+                case true:
+                    break;
+                case false:
+                    break;
+            }
+
+            return refresh is null;
+        }
+        catch (ArgumentException)
+        {
+            throw new DomainNameEncodingException();
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw new NetworkException();
+        }
+    }
 }

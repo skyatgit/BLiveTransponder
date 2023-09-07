@@ -75,11 +75,10 @@ public partial class LoginPanel : Panel
 
     private void SetCookie(string sessdata, string refreshToken)
     {
-        //TODO 通过refreshToken刷新Cookie
-        var userName = BLiveBase.GetMyInfo(sessdata);
-        Sessdata = userName is null ? null : sessdata;
-        _userLinkButton.Text = userName is null ? "未登录:游客" : $"已登录:{userName}";
-        BLiveConfig.SaveCookie(userName is null ? null : sessdata, userName is null ? null : refreshToken);
+        var expired = BLiveBase.RefreshCookie(ref sessdata, ref refreshToken);
+        Sessdata = sessdata;
+        _userLinkButton.Text = expired ? "未登录:游客" : $"已登录:{BLiveBase.GetMyInfo(sessdata)}";
+        BLiveConfig.SaveCookie(sessdata, refreshToken);
     }
 
     private void LoadCookie()
