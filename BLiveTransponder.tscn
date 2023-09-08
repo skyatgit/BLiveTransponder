@@ -63,19 +63,92 @@ text = "未登录:游客"
 underline = 1
 metadata/_edit_lock_ = true
 
-[node name="RichTextLabel" type="RichTextLabel" parent="."]
+[node name="TabContainer" type="TabContainer" parent="."]
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = 40.0
+metadata/_edit_lock_ = true
+
+[node name="弹幕" type="TabBar" parent="TabContainer"]
+visible = false
+layout_mode = 2
+metadata/_edit_lock_ = true
+
+[node name="DmRichTextLabel" type="RichTextLabel" parent="TabContainer/弹幕"]
 layout_mode = 1
 anchors_preset = -1
 anchor_right = 1.0
 anchor_bottom = 1.0
 offset_left = 10.0
-offset_top = 50.0
+offset_top = 10.0
 offset_right = -10.0
 offset_bottom = -10.0
 scroll_following = true
 metadata/_edit_lock_ = true
 
+[node name="设置" type="TabBar" parent="TabContainer"]
+layout_mode = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="TabContainer/设置"]
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 10.0
+offset_top = 10.0
+offset_right = -10.0
+offset_bottom = -10.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="WebSocketServerHBoxContainer" type="HBoxContainer" parent="TabContainer/设置/VBoxContainer"]
+layout_mode = 2
+
+[node name="CheckBox" type="CheckBox" parent="TabContainer/设置/VBoxContainer/WebSocketServerHBoxContainer"]
+custom_minimum_size = Vector2(200, 40)
+layout_mode = 2
+text = "启用WebSocket服务器"
+
+[node name="Label" type="Label" parent="TabContainer/设置/VBoxContainer/WebSocketServerHBoxContainer"]
+custom_minimum_size = Vector2(80, 40)
+layout_mode = 2
+text = "端口号："
+horizontal_alignment = 2
+vertical_alignment = 1
+
+[node name="LineEdit" type="LineEdit" parent="TabContainer/设置/VBoxContainer/WebSocketServerHBoxContainer"]
+custom_minimum_size = Vector2(100, 40)
+layout_mode = 2
+placeholder_text = "0~65535"
+max_length = 5
+clear_button_enabled = true
+
+[node name="TcpServerHBoxContainer" type="HBoxContainer" parent="TabContainer/设置/VBoxContainer"]
+layout_mode = 2
+
+[node name="CheckBox" type="CheckBox" parent="TabContainer/设置/VBoxContainer/TcpServerHBoxContainer"]
+custom_minimum_size = Vector2(200, 40)
+layout_mode = 2
+text = "启用TPC服务器"
+
+[node name="Label" type="Label" parent="TabContainer/设置/VBoxContainer/TcpServerHBoxContainer"]
+custom_minimum_size = Vector2(80, 40)
+layout_mode = 2
+text = "端口号："
+horizontal_alignment = 2
+vertical_alignment = 1
+
+[node name="LineEdit" type="LineEdit" parent="TabContainer/设置/VBoxContainer/TcpServerHBoxContainer"]
+custom_minimum_size = Vector2(100, 40)
+layout_mode = 2
+placeholder_text = "0~65535"
+max_length = 5
+clear_button_enabled = true
+
 [node name="LoginPanel" type="Panel" parent="."]
+visible = false
 layout_mode = 1
 anchors_preset = -1
 anchor_left = 0.5
@@ -89,6 +162,7 @@ offset_bottom = 90.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("3_b4f48")
+metadata/_edit_lock_ = true
 
 [node name="QrTextureButton" type="TextureButton" parent="LoginPanel"]
 custom_minimum_size = Vector2(160, 160)
@@ -102,6 +176,7 @@ offset_bottom = 160.0
 grow_horizontal = 2
 ignore_texture_size = true
 stretch_mode = 0
+metadata/_edit_lock_ = true
 
 [node name="CancelButton" type="Button" parent="LoginPanel"]
 layout_mode = 1
@@ -114,6 +189,7 @@ offset_bottom = -45.0
 grow_horizontal = 2
 grow_vertical = 0
 text = "游客登录"
+metadata/_edit_lock_ = true
 
 [node name="ReturnButton" type="Button" parent="LoginPanel"]
 layout_mode = 1
@@ -123,6 +199,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 offset_top = -40.0
 text = "返回"
+metadata/_edit_lock_ = true
 
 [connection signal="toggled" from="TopColorRect/ConnectCheckButton" to="." method="Toggled"]
 [connection signal="pressed" from="TopColorRect/UserLinkButton" to="LoginPanel" method="SwitchUi"]

@@ -10,14 +10,14 @@ public partial class BLiveTransponder : Control
     private readonly BLiveApi _api = new();
     private readonly BLiveWebSocketServer _bLiveWebSocketServer = new();
     private CheckButton _connectCheckButton;
-    private RichTextLabel _label;
+    private RichTextLabel _dmRichTextLabel;
     private LoginPanel _loginPanel;
     private LineEdit _roomIdLineEdit;
     private LinkButton _userLinkButton;
 
     public override void _Ready()
     {
-        _label = GetNode("RichTextLabel") as RichTextLabel;
+        _dmRichTextLabel = GetNode("TabContainer/弹幕/DmRichTextLabel") as RichTextLabel;
         _userLinkButton = GetNode("TopColorRect/UserLinkButton") as LinkButton;
         _loginPanel = GetNode("LoginPanel") as LoginPanel;
         _connectCheckButton = GetNode("TopColorRect/ConnectCheckButton") as CheckButton;
@@ -33,7 +33,8 @@ public partial class BLiveTransponder : Control
     {
         _connectCheckButton.Text = "已连接";
         _connectCheckButton.Disabled = false;
-        _label.Clear();
+        _dmRichTextLabel.Clear();
+        _dmRichTextLabel.AddText($"已成功连接至房间:{e.roomId}\n");
     }
 
     private async void Toggled(bool connect)
@@ -51,13 +52,13 @@ public partial class BLiveTransponder : Control
                 }
                 catch (Exception e)
                 {
-                    _label.AddText($"{e.Message}\n");
+                    _dmRichTextLabel.AddText($"{e.Message}\n");
                     SetConnectStatus(false);
                 }
             }
             else
             {
-                _label.AddText("无效的房间号\n");
+                _dmRichTextLabel.AddText("无效的房间号\n");
                 SetConnectStatus(false);
             }
         }
@@ -89,7 +90,7 @@ public partial class BLiveTransponder : Control
 
     private void DanmuMsgEvent(object sender, (string msg, ulong userId, string userName, int guardLevel, string face, JObject rawData) e)
     {
-        _label.AddText($"{e.userName}:{e.msg}\n");
+        _dmRichTextLabel.AddText($"{e.userName}:{e.msg}\n");
     }
 
     [TargetCmd("ALL")]
