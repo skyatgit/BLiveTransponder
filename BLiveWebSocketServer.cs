@@ -12,7 +12,7 @@ public class BLiveWebSocketServer
     private readonly ConcurrentDictionary<Guid, WebSocket> _clients = new();
     private readonly bool _enable;
     private readonly ushort _port;
-    public string Info;
+    public string Info = "WebSocket服务器未启动";
 
     public BLiveWebSocketServer()
     {
