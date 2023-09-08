@@ -13,10 +13,12 @@ public static class BLiveConfig
         return Config.GetValue("config", "roomId", 0).AsUInt64();
     }
 
-    public static (string, string) GetCookie()
+    public static (string, string, string) GetCookie()
     {
         Config.Load(Path);
-        return (Config.GetValue("Cookie", "sessdata", "").AsString(), Config.GetValue("Cookie", "refreshToken", "").AsString());
+        return (Config.GetValue("Cookie", "sessdata", "").AsString(),
+            Config.GetValue("Cookie", "refreshToken", "").AsString(),
+            Config.GetValue("Cookie", "csrf", "").AsString());
     }
 
     public static void SaveRoomId(ulong roomId)
@@ -25,10 +27,11 @@ public static class BLiveConfig
         Config.Save(Path);
     }
 
-    public static void SaveCookie(string sessdata, string refreshToken)
+    public static void SaveCookie(string sessdata, string refreshToken, string csrf)
     {
         Config.SetValue("Cookie", "sessdata", sessdata);
         Config.SetValue("Cookie", "refreshToken", refreshToken);
+        Config.SetValue("Cookie", "csrf", csrf);
         Config.Save(Path);
     }
 }

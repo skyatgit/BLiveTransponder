@@ -42,7 +42,7 @@ public partial class LoginPanel : Panel
 
     private void CancelLogin()
     {
-        SetCookie(null, null);
+        SetCookie(null, null, null);
         HideUi();
     }
 
@@ -64,8 +64,9 @@ public partial class LoginPanel : Panel
         {
             case 0:
                 HideUi();
-                var match = Regex.Match(url, @"SESSDATA=(.+?)&");
-                SetCookie(match.Groups[1].Value, refreshToken);
+                var sessdata = Regex.Match(url, @"SESSDATA=(.+?)&").Groups[1].Value;
+                var csrf = Regex.Match(url, @"bili_jct=(.+?)&").Groups[1].Value;
+                SetCookie(sessdata, refreshToken, csrf);
                 return;
             case 86038:
                 RefreshQr();
@@ -73,17 +74,17 @@ public partial class LoginPanel : Panel
         }
     }
 
-    private void SetCookie(string sessdata, string refreshToken)
+    private void SetCookie(string sessdata, string refreshToken, string csrf)
     {
-        var expired = BLiveBase.RefreshCookie(ref sessdata, ref refreshToken);
+        var expired = BLiveBase.RefreshCookie(ref sessdata, ref refreshToken, ref csrf);
         Sessdata = sessdata;
         _userLinkButton.Text = expired ? "未登录:游客" : $"已登录:{BLiveBase.GetMyInfo(sessdata)}";
-        BLiveConfig.SaveCookie(sessdata, refreshToken);
+        BLiveConfig.SaveCookie(sessdata, refreshToken, csrf);
     }
 
     private void LoadCookie()
     {
-        var (sessdata, refreshToken) = BLiveConfig.GetCookie();
-        SetCookie(sessdata, refreshToken);
+        var (sessdata, refreshToken, csrf) = BLiveConfig.GetCookie();
+        SetCookie(sessdata, refreshToken, csrf);
     }
 }
