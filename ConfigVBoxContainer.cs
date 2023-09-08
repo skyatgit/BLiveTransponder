@@ -29,17 +29,17 @@ public partial class ConfigVBoxContainer : VBoxContainer
 
     private void SaveConfig()
     {
-        var parseWebSocketServerPortSuccess = uint.TryParse(_webSocketServerPort.Text, out var webSocketServerPort);
-        var parseTcpServerPortSuccess = uint.TryParse(_tcpServerPort.Text, out var tcpServerPort);
+        var parseWebSocketServerPortSuccess = ushort.TryParse(_webSocketServerPort.Text, out var webSocketServerPort);
+        var parseTcpServerPortSuccess = ushort.TryParse(_tcpServerPort.Text, out var tcpServerPort);
         var success = true;
         var reason = "";
-        if (!parseWebSocketServerPortSuccess || webSocketServerPort > 65535)
+        if (!parseWebSocketServerPortSuccess || webSocketServerPort == 0)
         {
             success = false;
             reason += ",WebSocketServer端口无效";
         }
 
-        if (!parseTcpServerPortSuccess || tcpServerPort > 65535)
+        if (!parseTcpServerPortSuccess || tcpServerPort == 0)
         {
             success = false;
             reason += ",TcpServer端口无效";
@@ -61,13 +61,22 @@ public partial class ConfigVBoxContainer : VBoxContainer
         _infoLabel.Text = success ? $"修改成功,修改的内容将在下次启动时生效:{time}" : $"修改失败{reason}:{time}";
     }
 
+    private void ResetConfig()
+    {
+        _webSocketServerPort.Text = "19980";
+        _tcpServerPort.Text = "19981";
+        _enableWebSocketServer.ButtonPressed = true;
+        _enableTcpServer.ButtonPressed = true;
+        SaveConfig();
+    }
+
     private void LoadWebSocketServerConfig()
     {
         var (enable, port) = BLiveConfig.GetWebSocketServerConfig();
         (_enableWebSocketServer.ButtonPressed, _webSocketServerPort.Text) = (enable, port.ToString());
     }
 
-    private void SaveWebSocketServerConfig(uint port)
+    private void SaveWebSocketServerConfig(ushort port)
     {
         BLiveConfig.SaveWebSocketServerConfig(_enableWebSocketServer.ButtonPressed, port);
     }
@@ -78,7 +87,7 @@ public partial class ConfigVBoxContainer : VBoxContainer
         (_enableTcpServer.ButtonPressed, _tcpServerPort.Text) = (enable, port.ToString());
     }
 
-    private void SaveTcpServerConfig(uint port)
+    private void SaveTcpServerConfig(ushort port)
     {
         BLiveConfig.SaveTcpServerConfig(_enableTcpServer.ButtonPressed, port);
     }

@@ -174,8 +174,8 @@ public static class BLiveBase
             var newRefreshToken = (string)refreshJsonResult?.SelectToken("data.refresh_token");
             if (newRefreshToken is null) return (sessdata, refreshToken, csrf);
             var headers = response.Headers.ToString();
-            var newSessdata = Regex.Match(headers, @"SESSDATA=(.+?);").Groups[1].Value;
-            var newCsrf = Regex.Match(headers, @"bili_jct=(.+?);").Groups[1].Value;
+            var newSessdata = Regex.Match(headers, "SESSDATA=(.+?);").Groups[1].Value;
+            var newCsrf = Regex.Match(headers, "bili_jct=(.+?);").Groups[1].Value;
             ConfirmRefresh(newSessdata, refreshToken, newCsrf);
             return (newSessdata, newRefreshToken, newCsrf);
         }

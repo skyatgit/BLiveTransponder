@@ -11,7 +11,8 @@ public class BLiveWebSocketServer
 {
     private readonly ConcurrentDictionary<Guid, WebSocket> _clients = new();
     private readonly bool _enable;
-    private readonly uint _port;
+    private readonly ushort _port;
+    public string Info;
 
     public BLiveWebSocketServer()
     {
@@ -23,7 +24,17 @@ public class BLiveWebSocketServer
     {
         using var listener = new HttpListener();
         listener.Prefixes.Add($"http://localhost:{_port}/BLiveSMS/");
-        listener.Start();
+        try
+        {
+            listener.Start();
+        }
+        catch (Exception e)
+        {
+            Info = $"WebSocket服务器在 ws://localhost:{_port}/BLiveSMS/ 上启动失败,原因:{e.Message}";
+            return;
+        }
+
+        Info = $"WebSocket服务器在 ws://localhost:{_port}/BLiveSMS/ 上启动成功";
         while (_enable)
         {
             var context = await listener.GetContextAsync();

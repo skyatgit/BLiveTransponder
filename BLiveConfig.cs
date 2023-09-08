@@ -35,28 +35,28 @@ public static class BLiveConfig
         Config.Save(Path);
     }
 
-    public static (bool, uint) GetWebSocketServerConfig()
+    public static (bool, ushort) GetWebSocketServerConfig()
     {
         Config.Load(Path);
         return (Config.GetValue("WebSocketServerConfig", "enable", true).AsBool(),
-            Config.GetValue("WebSocketServerConfig", "port", 19980).AsUInt32());
+            Config.GetValue("WebSocketServerConfig", "port", 19980).AsUInt16());
     }
 
-    public static void SaveWebSocketServerConfig(bool enable, uint port)
+    public static void SaveWebSocketServerConfig(bool enable, ushort port)
     {
         Config.SetValue("WebSocketServerConfig", "enable", enable);
         Config.SetValue("WebSocketServerConfig", "port", port);
         Config.Save(Path);
     }
 
-    public static (bool, uint) GetTcpServerConfig()
+    public static (bool, ushort) GetTcpServerConfig()
     {
         Config.Load(Path);
         return (Config.GetValue("TcpServerConfig", "enable", true).AsBool(),
-            Config.GetValue("TcpServerConfig", "port", 19981).AsUInt32());
+            Config.GetValue("TcpServerConfig", "port", 19981).AsUInt16());
     }
 
-    public static void SaveTcpServerConfig(bool enable, uint port)
+    public static void SaveTcpServerConfig(bool enable, ushort port)
     {
         Config.SetValue("TcpServerConfig", "enable", enable);
         Config.SetValue("TcpServerConfig", "port", port);

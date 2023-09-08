@@ -127,7 +127,7 @@ vertical_alignment = 1
 [node name="LineEdit" type="LineEdit" parent="TabContainer/设置/ConfigVBoxContainer/WebSocketServerHBoxContainer"]
 custom_minimum_size = Vector2(100, 40)
 layout_mode = 2
-placeholder_text = "0~65535"
+placeholder_text = "1~65535"
 max_length = 5
 clear_button_enabled = true
 
@@ -149,17 +149,22 @@ vertical_alignment = 1
 [node name="LineEdit" type="LineEdit" parent="TabContainer/设置/ConfigVBoxContainer/TcpServerHBoxContainer"]
 custom_minimum_size = Vector2(100, 40)
 layout_mode = 2
-placeholder_text = "0~65535"
+placeholder_text = "1~65535"
 max_length = 5
 clear_button_enabled = true
 
 [node name="SaveHBoxContainer" type="HBoxContainer" parent="TabContainer/设置/ConfigVBoxContainer"]
 layout_mode = 2
 
-[node name="Button" type="Button" parent="TabContainer/设置/ConfigVBoxContainer/SaveHBoxContainer"]
+[node name="SaveButton" type="Button" parent="TabContainer/设置/ConfigVBoxContainer/SaveHBoxContainer"]
 custom_minimum_size = Vector2(100, 40)
 layout_mode = 2
 text = "保存"
+
+[node name="ResetButton" type="Button" parent="TabContainer/设置/ConfigVBoxContainer/SaveHBoxContainer"]
+custom_minimum_size = Vector2(100, 40)
+layout_mode = 2
+text = "重置"
 
 [node name="LoginPanel" type="Panel" parent="."]
 visible = false
@@ -217,7 +222,8 @@ metadata/_edit_lock_ = true
 
 [connection signal="toggled" from="TopColorRect/ConnectCheckButton" to="." method="Toggled"]
 [connection signal="pressed" from="TopColorRect/UserLinkButton" to="LoginPanel" method="SwitchUi"]
-[connection signal="pressed" from="TabContainer/设置/ConfigVBoxContainer/SaveHBoxContainer/Button" to="TabContainer/设置/ConfigVBoxContainer" method="SaveConfig"]
+[connection signal="pressed" from="TabContainer/设置/ConfigVBoxContainer/SaveHBoxContainer/SaveButton" to="TabContainer/设置/ConfigVBoxContainer" method="SaveConfig"]
+[connection signal="pressed" from="TabContainer/设置/ConfigVBoxContainer/SaveHBoxContainer/ResetButton" to="TabContainer/设置/ConfigVBoxContainer" method="ResetConfig"]
 [connection signal="pressed" from="LoginPanel/QrTextureButton" to="LoginPanel" method="RefreshQr"]
 [connection signal="pressed" from="LoginPanel/CancelButton" to="LoginPanel" method="CancelLogin"]
 [connection signal="pressed" from="LoginPanel/ReturnButton" to="LoginPanel" method="HideUi"]

@@ -28,6 +28,8 @@ public partial class BLiveTransponder : Control
         _api.DanmuMsg += DanmuMsgEvent;
         var roomId = BLiveConfig.GetRoomConfig();
         if (roomId != 0) _roomIdLineEdit!.Text = roomId.ToString();
+        _dmRichTextLabel?.AddText($"{_bLiveWebSocketServer.Info}\n");
+        _dmRichTextLabel?.AddText($"{_bLiveTcpServer.Info}\n");
     }
 
     private void OpAuthReplyEvent(object sender, (JObject authReply, ulong? roomId, byte[] rawData) e)

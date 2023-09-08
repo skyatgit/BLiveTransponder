@@ -64,8 +64,8 @@ public partial class LoginPanel : Panel
         {
             case 0:
                 HideUi();
-                var sessdata = Regex.Match(url, @"SESSDATA=(.+?)&").Groups[1].Value;
-                var csrf = Regex.Match(url, @"bili_jct=(.+?)&").Groups[1].Value;
+                var sessdata = Regex.Match(url, "SESSDATA=(.+?)&").Groups[1].Value;
+                var csrf = Regex.Match(url, "bili_jct=(.+?)&").Groups[1].Value;
                 SetCookie(sessdata, refreshToken, csrf);
                 return;
             case 86038:

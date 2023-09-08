@@ -10,7 +10,8 @@ public class BLiveTcpServer
 {
     private readonly ConcurrentDictionary<Guid, Socket> _clients = new();
     private readonly bool _enable;
-    private readonly uint _port;
+    private readonly ushort _port;
+    public string Info;
 
     public BLiveTcpServer()
     {
@@ -20,8 +21,18 @@ public class BLiveTcpServer
 
     private async void StartAsync()
     {
-        var listener = new TcpListener(IPAddress.Any, (int)_port);
-        listener.Start();
+        var listener = new TcpListener(IPAddress.Any, _port);
+        try
+        {
+            listener.Start();
+        }
+        catch (Exception e)
+        {
+            Info = $"TcpSocket服务器在 localhost:{_port} 上启动失败,原因:{e.Message}";
+            return;
+        }
+
+        Info = $"TcpSocket服务器在 localhost:{_port} 上启动成功";
         while (_enable)
         {
             var clientSocket = await listener.AcceptTcpClientAsync();
