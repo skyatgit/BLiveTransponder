@@ -1,6 +1,7 @@
-[gd_scene load_steps=3 format=3 uid="uid://chwtel7hvgv24"]
+[gd_scene load_steps=4 format=3 uid="uid://chwtel7hvgv24"]
 
 [ext_resource type="Script" path="res://BLiveTransponder.cs" id="1_t6hwi"]
+[ext_resource type="Script" path="res://ConfigVBoxContainer.cs" id="2_jgvwk"]
 [ext_resource type="Script" path="res://LoginPanel.cs" id="3_b4f48"]
 
 [node name="BLiveTransponder" type="Control"]
@@ -91,7 +92,7 @@ metadata/_edit_lock_ = true
 [node name="设置" type="TabBar" parent="TabContainer"]
 layout_mode = 2
 
-[node name="VBoxContainer" type="VBoxContainer" parent="TabContainer/设置"]
+[node name="ConfigVBoxContainer" type="VBoxContainer" parent="TabContainer/设置"]
 layout_mode = 1
 anchors_preset = -1
 anchor_right = 1.0
@@ -102,50 +103,63 @@ offset_right = -10.0
 offset_bottom = -10.0
 grow_horizontal = 2
 grow_vertical = 2
+script = ExtResource("2_jgvwk")
 
-[node name="WebSocketServerHBoxContainer" type="HBoxContainer" parent="TabContainer/设置/VBoxContainer"]
+[node name="Label" type="Label" parent="TabContainer/设置/ConfigVBoxContainer"]
+layout_mode = 2
+text = "修改的内容将在下次启动时生效"
+
+[node name="WebSocketServerHBoxContainer" type="HBoxContainer" parent="TabContainer/设置/ConfigVBoxContainer"]
 layout_mode = 2
 
-[node name="CheckBox" type="CheckBox" parent="TabContainer/设置/VBoxContainer/WebSocketServerHBoxContainer"]
+[node name="CheckBox" type="CheckBox" parent="TabContainer/设置/ConfigVBoxContainer/WebSocketServerHBoxContainer"]
 custom_minimum_size = Vector2(200, 40)
 layout_mode = 2
 text = "启用WebSocket服务器"
 
-[node name="Label" type="Label" parent="TabContainer/设置/VBoxContainer/WebSocketServerHBoxContainer"]
+[node name="Label" type="Label" parent="TabContainer/设置/ConfigVBoxContainer/WebSocketServerHBoxContainer"]
 custom_minimum_size = Vector2(80, 40)
 layout_mode = 2
 text = "端口号："
 horizontal_alignment = 2
 vertical_alignment = 1
 
-[node name="LineEdit" type="LineEdit" parent="TabContainer/设置/VBoxContainer/WebSocketServerHBoxContainer"]
+[node name="LineEdit" type="LineEdit" parent="TabContainer/设置/ConfigVBoxContainer/WebSocketServerHBoxContainer"]
 custom_minimum_size = Vector2(100, 40)
 layout_mode = 2
 placeholder_text = "0~65535"
 max_length = 5
 clear_button_enabled = true
 
-[node name="TcpServerHBoxContainer" type="HBoxContainer" parent="TabContainer/设置/VBoxContainer"]
+[node name="TcpServerHBoxContainer" type="HBoxContainer" parent="TabContainer/设置/ConfigVBoxContainer"]
 layout_mode = 2
 
-[node name="CheckBox" type="CheckBox" parent="TabContainer/设置/VBoxContainer/TcpServerHBoxContainer"]
+[node name="CheckBox" type="CheckBox" parent="TabContainer/设置/ConfigVBoxContainer/TcpServerHBoxContainer"]
 custom_minimum_size = Vector2(200, 40)
 layout_mode = 2
 text = "启用TPC服务器"
 
-[node name="Label" type="Label" parent="TabContainer/设置/VBoxContainer/TcpServerHBoxContainer"]
+[node name="Label" type="Label" parent="TabContainer/设置/ConfigVBoxContainer/TcpServerHBoxContainer"]
 custom_minimum_size = Vector2(80, 40)
 layout_mode = 2
 text = "端口号："
 horizontal_alignment = 2
 vertical_alignment = 1
 
-[node name="LineEdit" type="LineEdit" parent="TabContainer/设置/VBoxContainer/TcpServerHBoxContainer"]
+[node name="LineEdit" type="LineEdit" parent="TabContainer/设置/ConfigVBoxContainer/TcpServerHBoxContainer"]
 custom_minimum_size = Vector2(100, 40)
 layout_mode = 2
 placeholder_text = "0~65535"
 max_length = 5
 clear_button_enabled = true
+
+[node name="SaveHBoxContainer" type="HBoxContainer" parent="TabContainer/设置/ConfigVBoxContainer"]
+layout_mode = 2
+
+[node name="Button" type="Button" parent="TabContainer/设置/ConfigVBoxContainer/SaveHBoxContainer"]
+custom_minimum_size = Vector2(100, 40)
+layout_mode = 2
+text = "保存"
 
 [node name="LoginPanel" type="Panel" parent="."]
 visible = false
@@ -203,6 +217,7 @@ metadata/_edit_lock_ = true
 
 [connection signal="toggled" from="TopColorRect/ConnectCheckButton" to="." method="Toggled"]
 [connection signal="pressed" from="TopColorRect/UserLinkButton" to="LoginPanel" method="SwitchUi"]
+[connection signal="pressed" from="TabContainer/设置/ConfigVBoxContainer/SaveHBoxContainer/Button" to="TabContainer/设置/ConfigVBoxContainer" method="SaveConfig"]
 [connection signal="pressed" from="LoginPanel/QrTextureButton" to="LoginPanel" method="RefreshQr"]
 [connection signal="pressed" from="LoginPanel/CancelButton" to="LoginPanel" method="CancelLogin"]
 [connection signal="pressed" from="LoginPanel/ReturnButton" to="LoginPanel" method="HideUi"]

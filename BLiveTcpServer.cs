@@ -1,37 +1,32 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Net;
-using System.Net.WebSockets;
+using System.Net.Sockets;
 using System.Text;
-using System.Threading;
 
 namespace BLiveTransponder;
 
-public class BLiveWebSocketServer
+public class BLiveTcpServer
 {
-    private readonly ConcurrentDictionary<Guid, WebSocket> _clients = new();
+    private readonly ConcurrentDictionary<Guid, Socket> _clients = new();
     private readonly bool _enable;
     private readonly uint _port;
 
-    public BLiveWebSocketServer()
+    public BLiveTcpServer()
     {
-        (_enable, _port) = BLiveConfig.GetWebSocketServerConfig();
+        (_enable, _port) = BLiveConfig.GetTcpServerConfig();
         if (_enable) StartAsync();
     }
 
     private async void StartAsync()
     {
-        using var listener = new HttpListener();
-        listener.Prefixes.Add($"http://localhost:{_port}/BLiveSMS/");
+        var listener = new TcpListener(IPAddress.Any, (int)_port);
         listener.Start();
         while (_enable)
         {
-            var context = await listener.GetContextAsync();
-            if (!context.Request.IsWebSocketRequest) continue;
-            WebSocketContext webSocketContext = await context.AcceptWebSocketAsync(null);
+            var clientSocket = await listener.AcceptTcpClientAsync();
             var clientId = Guid.NewGuid();
-            var clientSocket = webSocketContext.WebSocket;
-            _clients.TryAdd(clientId, clientSocket);
+            _clients.TryAdd(clientId, clientSocket.Client);
         }
     }
 
@@ -47,7 +42,7 @@ public class BLiveWebSocketServer
         try
         {
             var buffer = Encoding.UTF8.GetBytes(message);
-            await clientSocket.SendAsync(new ArraySegment<byte>(buffer), WebSocketMessageType.Text, true, CancellationToken.None);
+            await clientSocket.SendAsync(new ArraySegment<byte>(buffer), SocketFlags.None);
         }
         catch (Exception)
         {

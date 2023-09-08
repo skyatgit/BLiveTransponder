@@ -8,6 +8,7 @@ namespace BLiveTransponder;
 public partial class BLiveTransponder : Control
 {
     private readonly BLiveApi _api = new();
+    private readonly BLiveTcpServer _bLiveTcpServer = new();
     private readonly BLiveWebSocketServer _bLiveWebSocketServer = new();
     private CheckButton _connectCheckButton;
     private RichTextLabel _dmRichTextLabel;
@@ -25,7 +26,7 @@ public partial class BLiveTransponder : Control
         _api.OpSendSmsReply += OpSendSmsReplyEvent;
         _api.OpAuthReply += OpAuthReplyEvent;
         _api.DanmuMsg += DanmuMsgEvent;
-        var roomId = BLiveConfig.GetRoomId();
+        var roomId = BLiveConfig.GetRoomConfig();
         if (roomId != 0) _roomIdLineEdit!.Text = roomId.ToString();
     }
 
@@ -47,7 +48,7 @@ public partial class BLiveTransponder : Control
             {
                 try
                 {
-                    BLiveConfig.SaveRoomId(roomId);
+                    BLiveConfig.SaveRoomConfig(roomId);
                     await _api.Connect(roomId, 3, _loginPanel.Sessdata);
                 }
                 catch (Exception e)
@@ -97,6 +98,7 @@ public partial class BLiveTransponder : Control
     private void OpSendSmsReplyEvent(object sender, (string cmd, string hitCmd, JObject rawData) e)
     {
         _bLiveWebSocketServer.SendMessage(e.rawData.ToString());
+        _bLiveTcpServer.SendMessage(e.rawData.ToString());
     }
 
     public override void _Process(double delta)
