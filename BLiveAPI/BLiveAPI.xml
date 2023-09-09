@@ -54,7 +54,7 @@
                 服务器发送的SMS消息
             </summary>
         </member>
-        <member name="M:BLiveAPI.BLiveEvents.OnOpSendSmsReply(Newtonsoft.Json.Linq.JObject)">
+        <member name="M:BLiveAPI.BLiveEvents.OnOpSendSmsReply(Newtonsoft.Json.Linq.JObject,System.Byte[])">
             <inheritdoc cref="E:BLiveAPI.BLiveEvents.OpSendSmsReply" />
         </member>
         <member name="E:BLiveAPI.BLiveEvents.DanmuMsg">

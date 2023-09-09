@@ -91,16 +91,17 @@ public partial class BLiveTransponder : Control
         }
     }
 
-    private void DanmuMsgEvent(object sender, (string msg, ulong userId, string userName, int guardLevel, string face, JObject rawData) e)
+    private void DanmuMsgEvent(object sender, (string msg, ulong userId, string userName, int guardLevel, string face, JObject jsonRawData, byte[] rawData) e)
     {
         _dmRichTextLabel.AddText($"{e.userName}:{e.msg}\n");
     }
 
     [TargetCmd("ALL")]
-    private void OpSendSmsReplyEvent(object sender, (string cmd, string hitCmd, JObject rawData) e)
+    private void OpSendSmsReplyEvent(object sender, (string cmd, string hitCmd, JObject jsonRawData, byte[] rawData) e)
     {
-        _bLiveWebSocketServer.SendMessage(e.rawData.ToString());
-        _bLiveTcpServer.SendMessage(e.rawData.ToString());
+        var data = BLiveBase.CreateBLiveSmsPacket(0, e.rawData);
+        _bLiveWebSocketServer.SendMessage(data);
+        _bLiveTcpServer.SendMessage(data);
     }
 
     public override void _Process(double delta)

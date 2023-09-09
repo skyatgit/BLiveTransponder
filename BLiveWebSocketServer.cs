@@ -2,7 +2,6 @@
 using System.Collections.Concurrent;
 using System.Net;
 using System.Net.WebSockets;
-using System.Text;
 using System.Threading;
 
 namespace BLiveTransponder;
@@ -46,19 +45,18 @@ public class BLiveWebSocketServer
         }
     }
 
-    public void SendMessage(string message)
+    public void SendMessage(byte[] rawData)
     {
         if (!_enable) return;
-        foreach (var clientId in _clients.Keys) SendToClient(clientId, message);
+        foreach (var clientId in _clients.Keys) SendToClient(clientId, rawData);
     }
 
-    private async void SendToClient(Guid clientId, string message)
+    private async void SendToClient(Guid clientId, byte[] rawData)
     {
         if (!_clients.TryGetValue(clientId, out var clientSocket)) return;
         try
         {
-            var buffer = Encoding.UTF8.GetBytes(message);
-            await clientSocket.SendAsync(new ArraySegment<byte>(buffer), WebSocketMessageType.Text, true, CancellationToken.None);
+            await clientSocket.SendAsync(rawData, WebSocketMessageType.Binary, true, CancellationToken.None);
         }
         catch (Exception)
         {
