@@ -8,8 +8,8 @@ namespace BLiveTransponder;
 public partial class BLiveTransponder : Control
 {
     private readonly BLiveApi _api = new();
-    private readonly BLiveTcpServer _bLiveTcpServer = new();
-    private readonly BLiveWebSocketServer _bLiveWebSocketServer = new();
+    private BLiveTcpServer _bLiveTcpServer;
+    private BLiveWebSocketServer _bLiveWebSocketServer;
     private CheckButton _connectCheckButton;
     private RichTextLabel _dmRichTextLabel;
     private LoginPanel _loginPanel;
@@ -23,6 +23,8 @@ public partial class BLiveTransponder : Control
         _loginPanel = GetNode("LoginPanel") as LoginPanel;
         _connectCheckButton = GetNode("TopColorRect/ConnectCheckButton") as CheckButton;
         _roomIdLineEdit = GetNode("TopColorRect/RoomIdLineEdit") as LineEdit;
+        _bLiveTcpServer = new BLiveTcpServer(GetNode("TopColorRect/TcpClientCountLabel") as Label);
+        _bLiveWebSocketServer = new BLiveWebSocketServer(GetNode("TopColorRect/WebSocketClientCountLabel") as Label);
         _api.OpSendSmsReply += OpSendSmsReplyEvent;
         _api.OpAuthReply += OpAuthReplyEvent;
         _api.DanmuMsg += DanmuMsgEvent;

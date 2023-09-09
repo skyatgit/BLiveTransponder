@@ -3,18 +3,21 @@ using System.Collections.Concurrent;
 using System.Net;
 using System.Net.WebSockets;
 using System.Threading;
+using Godot;
 
 namespace BLiveTransponder;
 
 public class BLiveWebSocketServer
 {
+    private readonly Label _clientCountLabel;
     private readonly ConcurrentDictionary<Guid, WebSocket> _clients = new();
     private readonly bool _enable;
     private readonly ushort _port;
     public string Info = "WebSocket服务器未启动";
 
-    public BLiveWebSocketServer()
+    public BLiveWebSocketServer(Label clientCountLabel)
     {
+        _clientCountLabel = clientCountLabel;
         (_enable, _port) = BLiveConfig.GetWebSocketServerConfig();
         if (_enable) StartAsync();
     }
@@ -42,6 +45,7 @@ public class BLiveWebSocketServer
             var clientId = Guid.NewGuid();
             var clientSocket = webSocketContext.WebSocket;
             _clients.TryAdd(clientId, clientSocket);
+            _clientCountLabel.Text = $"WebSocket客户端:{_clients.Count}";
         }
     }
 
@@ -62,6 +66,7 @@ public class BLiveWebSocketServer
         {
             clientSocket.Dispose();
             _clients.TryRemove(clientId, out _);
+            _clientCountLabel.Text = $"WebSocket客户端:{_clients.Count}";
         }
     }
 }

@@ -2,18 +2,21 @@
 using System.Collections.Concurrent;
 using System.Net;
 using System.Net.Sockets;
+using Godot;
 
 namespace BLiveTransponder;
 
 public class BLiveTcpServer
 {
+    private readonly Label _clientCountLabel;
     private readonly ConcurrentDictionary<Guid, Socket> _clients = new();
     private readonly bool _enable;
     private readonly ushort _port;
     public string Info = "Tcp服务器未启动";
 
-    public BLiveTcpServer()
+    public BLiveTcpServer(Label clientCountLabel)
     {
+        _clientCountLabel = clientCountLabel;
         (_enable, _port) = BLiveConfig.GetTcpServerConfig();
         if (_enable) StartAsync();
     }
@@ -37,6 +40,7 @@ public class BLiveTcpServer
             var clientSocket = await listener.AcceptTcpClientAsync();
             var clientId = Guid.NewGuid();
             _clients.TryAdd(clientId, clientSocket.Client);
+            _clientCountLabel.Text = $"Tcp客户端:{_clients.Count}";
         }
     }
 
@@ -57,6 +61,7 @@ public class BLiveTcpServer
         {
             clientSocket.Dispose();
             _clients.TryRemove(clientId, out _);
+            _clientCountLabel.Text = $"Tcp客户端:{_clients.Count}";
         }
     }
 }
