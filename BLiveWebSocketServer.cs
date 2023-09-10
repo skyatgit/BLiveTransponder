@@ -1,72 +1,54 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Net;
 using System.Net.WebSockets;
 using System.Threading;
-using Godot;
+using System.Threading.Tasks;
 
 namespace BLiveTransponder;
 
-public class BLiveWebSocketServer
+internal class BLiveWebSocketServer : BLiveServer<WebSocket>
 {
-    private readonly Label _clientCountLabel;
-    private readonly ConcurrentDictionary<Guid, WebSocket> _clients = new();
-    private readonly bool _enable;
-    private readonly ushort _port;
-    public string Info = "WebSocket服务器未启动";
-
-    public BLiveWebSocketServer(Label clientCountLabel)
+    protected override (bool, ushort) GetServerConfig()
     {
-        _clientCountLabel = clientCountLabel;
-        (_enable, _port) = BLiveConfig.GetWebSocketServerConfig();
-        if (_enable) StartAsync();
+        return BLiveConfig.GetWebSocketServerConfig();
     }
 
-    private async void StartAsync()
+    internal async void StartAsync()
     {
+        if (!Enable) return;
         using var listener = new HttpListener();
-        listener.Prefixes.Add($"http://localhost:{_port}/BLiveSMS/");
+        listener.Prefixes.Add($"http://localhost:{Port}/BLiveSMS/");
         try
         {
             listener.Start();
         }
         catch (Exception e)
         {
-            Info = $"WebSocket服务器在 ws://localhost:{_port}/BLiveSMS/ 上启动失败,原因:{e.Message}";
+            InvokeServerStateChange($"WebSocket服务器在 ws://localhost:{Port}/BLiveSMS/ 上启动失败,原因:{e.Message}");
             return;
         }
 
-        Info = $"WebSocket服务器在 ws://localhost:{_port}/BLiveSMS/ 上启动成功";
-        while (_enable)
+        InvokeServerStateChange($"WebSocket服务器在 ws://localhost:{Port}/BLiveSMS/ 上启动成功");
+        while (true)
         {
             var context = await listener.GetContextAsync();
             if (!context.Request.IsWebSocketRequest) continue;
             WebSocketContext webSocketContext = await context.AcceptWebSocketAsync(null);
             var clientId = Guid.NewGuid();
             var clientSocket = webSocketContext.WebSocket;
-            _clients.TryAdd(clientId, clientSocket);
-            _clientCountLabel.Text = $"WebSocket客户端:{_clients.Count}";
+            Clients.TryAdd(clientId, clientSocket);
+            InvokeClientCountChange($"{Clients.Count}");
+            HandleClient(clientId);
         }
     }
 
-    public void SendMessage(byte[] rawData)
+    protected override void ClientDispose(WebSocket clientSocket)
     {
-        if (!_enable) return;
-        foreach (var clientId in _clients.Keys) SendToClient(clientId, rawData);
+        clientSocket.Dispose();
     }
 
-    private async void SendToClient(Guid clientId, byte[] rawData)
+    protected override Task ClientSendAsync(WebSocket clientSocket, byte[] rawData)
     {
-        if (!_clients.TryGetValue(clientId, out var clientSocket)) return;
-        try
-        {
-            await clientSocket.SendAsync(rawData, WebSocketMessageType.Binary, true, CancellationToken.None);
-        }
-        catch (Exception)
-        {
-            clientSocket.Dispose();
-            _clients.TryRemove(clientId, out _);
-            _clientCountLabel.Text = $"WebSocket客户端:{_clients.Count}";
-        }
+        return clientSocket.SendAsync(rawData, WebSocketMessageType.Binary, true, CancellationToken.None);
     }
 }

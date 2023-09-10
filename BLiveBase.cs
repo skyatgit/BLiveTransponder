@@ -14,9 +14,9 @@ using HttpClient = System.Net.Http.HttpClient;
 
 namespace BLiveTransponder;
 
-public static class BLiveBase
+internal static class BLiveBase
 {
-    public static (int, string, string) GetQrResult(string qrcodeKey)
+    internal static (int, string, string) GetQrResult(string qrcodeKey)
     {
         try
         {
@@ -38,7 +38,7 @@ public static class BLiveBase
         }
     }
 
-    public static ImageTexture GetQrImage(string qrcodeKey)
+    internal static ImageTexture GetQrImage(string qrcodeKey)
     {
         var url = $"https://passport.bilibili.com/h5-app/passport/login/scan?navhide=1&qrcode_key={qrcodeKey}";
         using var qrcodeData = QRCodeGenerator.GenerateQrCode(url, QRCodeGenerator.ECCLevel.Q);
@@ -48,7 +48,7 @@ public static class BLiveBase
         return ImageTexture.CreateFromImage(image);
     }
 
-    public static string GetQrCodeKey()
+    internal static string GetQrCodeKey()
     {
         try
         {
@@ -68,7 +68,7 @@ public static class BLiveBase
         }
     }
 
-    public static string GetMyInfo(string sessdata)
+    internal static string GetMyInfo(string sessdata)
     {
         try
         {
@@ -88,7 +88,7 @@ public static class BLiveBase
         }
     }
 
-    public static bool RefreshCookie(ref string sessdata, ref string refreshToken, ref string csrf)
+    internal static bool RefreshCookie(ref string sessdata, ref string refreshToken, ref string csrf)
     {
         const string cookieInfoUrl = "https://passport.bilibili.com/x/passport-login/web/cookie/info";
         try
@@ -211,17 +211,27 @@ public static class BLiveBase
         }
     }
 
-    public static byte[] CreateBLiveSmsPacket(short version, byte[] body)
+    private static byte[] CreatePacket(short version, ServerOperation operation, byte[] body)
     {
         var packetLength = 16 + body.Length;
         var result = new byte[packetLength];
         Buffer.BlockCopy(ToBigEndianBytes(packetLength), 0, result, 0, 4);
         Buffer.BlockCopy(ToBigEndianBytes((short)16), 0, result, 4, 2);
         Buffer.BlockCopy(ToBigEndianBytes(version), 0, result, 6, 2);
-        Buffer.BlockCopy(ToBigEndianBytes(5), 0, result, 8, 4);
+        Buffer.BlockCopy(ToBigEndianBytes((int)operation), 0, result, 8, 4);
         Buffer.BlockCopy(ToBigEndianBytes(0), 0, result, 12, 4);
         Buffer.BlockCopy(body, 0, result, 16, body.Length);
         return result;
+    }
+
+    internal static byte[] CreateSmsPacket(short version, byte[] body)
+    {
+        return CreatePacket(version, ServerOperation.OpSendSmsReply, body);
+    }
+
+    internal static byte[] CreateHeartbeatPacket(short version)
+    {
+        return CreatePacket(version, ServerOperation.OpHeartbeatReply, Array.Empty<byte>());
     }
 
     private static byte[] ToBigEndianBytes(int value)
@@ -236,5 +246,11 @@ public static class BLiveBase
         var bytes = BitConverter.GetBytes(value);
         if (BitConverter.IsLittleEndian) Array.Reverse(bytes);
         return bytes;
+    }
+
+    private enum ServerOperation
+    {
+        OpHeartbeatReply = 3,
+        OpSendSmsReply = 5
     }
 }

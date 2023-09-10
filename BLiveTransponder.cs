@@ -8,13 +8,15 @@ namespace BLiveTransponder;
 public partial class BLiveTransponder : Control
 {
     private readonly BLiveApi _api = new();
-    private BLiveTcpServer _bLiveTcpServer;
-    private BLiveWebSocketServer _bLiveWebSocketServer;
+    private readonly BLiveTcpServer _bLiveTcpServer = new();
+    private readonly BLiveWebSocketServer _bLiveWebSocketServer = new();
     private CheckButton _connectCheckButton;
     private RichTextLabel _dmRichTextLabel;
     private LoginPanel _loginPanel;
     private LineEdit _roomIdLineEdit;
+    private Label _tcpClientCountLabel;
     private LinkButton _userLinkButton;
+    private Label _webSocketClientCountLabel;
 
     public override void _Ready()
     {
@@ -23,15 +25,34 @@ public partial class BLiveTransponder : Control
         _loginPanel = GetNode("LoginPanel") as LoginPanel;
         _connectCheckButton = GetNode("TopColorRect/ConnectCheckButton") as CheckButton;
         _roomIdLineEdit = GetNode("TopColorRect/RoomIdLineEdit") as LineEdit;
-        _bLiveTcpServer = new BLiveTcpServer(GetNode("TopColorRect/TcpClientCountLabel") as Label);
-        _bLiveWebSocketServer = new BLiveWebSocketServer(GetNode("TopColorRect/WebSocketClientCountLabel") as Label);
+        _tcpClientCountLabel = GetNode("TopColorRect/TcpClientCountLabel") as Label;
+        _webSocketClientCountLabel = GetNode("TopColorRect/WebSocketClientCountLabel") as Label;
         _api.OpSendSmsReply += OpSendSmsReplyEvent;
         _api.OpAuthReply += OpAuthReplyEvent;
         _api.DanmuMsg += DanmuMsgEvent;
+        _bLiveTcpServer.ServerStateChange += ServerStateChange;
+        _bLiveTcpServer.ClientCountChange += TcpClientCountChange;
+        _bLiveWebSocketServer.ServerStateChange += ServerStateChange;
+        _bLiveWebSocketServer.ClientCountChange += WebSocketClientCountChange;
         var roomId = BLiveConfig.GetRoomConfig();
         if (roomId != 0) _roomIdLineEdit!.Text = roomId.ToString();
-        _dmRichTextLabel?.AddText($"{_bLiveWebSocketServer.Info}\n");
-        _dmRichTextLabel?.AddText($"{_bLiveTcpServer.Info}\n");
+        _bLiveTcpServer.StartAsync();
+        _bLiveWebSocketServer.StartAsync();
+    }
+
+    private void ServerStateChange(string result)
+    {
+        _dmRichTextLabel.AddText($"{result}\n");
+    }
+
+    private void TcpClientCountChange(string result)
+    {
+        _tcpClientCountLabel.Text = $"Tcp客户端:{result}";
+    }
+
+    private void WebSocketClientCountChange(string result)
+    {
+        _webSocketClientCountLabel.Text = $"WebSocket客户端:{result}";
     }
 
     private void OpAuthReplyEvent(object sender, (JObject authReply, ulong? roomId, byte[] rawData) e)
@@ -101,9 +122,9 @@ public partial class BLiveTransponder : Control
     [TargetCmd("ALL")]
     private void OpSendSmsReplyEvent(object sender, (string cmd, string hitCmd, JObject jsonRawData, byte[] rawData) e)
     {
-        var data = BLiveBase.CreateBLiveSmsPacket(0, e.rawData);
-        _bLiveWebSocketServer.SendMessage(data);
-        _bLiveTcpServer.SendMessage(data);
+        var data = BLiveBase.CreateSmsPacket(0, e.rawData);
+        _bLiveWebSocketServer.SendSmsToClients(data);
+        _bLiveTcpServer.SendSmsToClients(data);
     }
 
     public override void _Process(double delta)

@@ -1,67 +1,49 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Net;
 using System.Net.Sockets;
-using Godot;
+using System.Threading.Tasks;
 
 namespace BLiveTransponder;
 
-public class BLiveTcpServer
+internal class BLiveTcpServer : BLiveServer<Socket>
 {
-    private readonly Label _clientCountLabel;
-    private readonly ConcurrentDictionary<Guid, Socket> _clients = new();
-    private readonly bool _enable;
-    private readonly ushort _port;
-    public string Info = "Tcp服务器未启动";
-
-    public BLiveTcpServer(Label clientCountLabel)
+    protected override (bool, ushort) GetServerConfig()
     {
-        _clientCountLabel = clientCountLabel;
-        (_enable, _port) = BLiveConfig.GetTcpServerConfig();
-        if (_enable) StartAsync();
+        return BLiveConfig.GetTcpServerConfig();
     }
 
-    private async void StartAsync()
+    internal async void StartAsync()
     {
-        var listener = new TcpListener(IPAddress.Any, _port);
+        if (!Enable) return;
+        var listener = new TcpListener(IPAddress.Any, Port);
         try
         {
             listener.Start();
         }
         catch (Exception e)
         {
-            Info = $"Tcp服务器在 localhost:{_port} 上启动失败,原因:{e.Message}";
+            InvokeServerStateChange($"Tcp服务器在 localhost:{Port} 上启动失败,原因:{e.Message}");
             return;
         }
 
-        Info = $"Tcp服务器在 localhost:{_port} 上启动成功";
-        while (_enable)
+        InvokeServerStateChange($"Tcp服务器在 localhost:{Port} 上启动成功");
+        while (true)
         {
             var clientSocket = await listener.AcceptTcpClientAsync();
             var clientId = Guid.NewGuid();
-            _clients.TryAdd(clientId, clientSocket.Client);
-            _clientCountLabel.Text = $"Tcp客户端:{_clients.Count}";
+            Clients.TryAdd(clientId, clientSocket.Client);
+            InvokeClientCountChange($"{Clients.Count}");
+            HandleClient(clientId);
         }
     }
 
-    public void SendMessage(byte[] rawData)
+    protected override void ClientDispose(Socket clientSocket)
     {
-        if (!_enable) return;
-        foreach (var clientId in _clients.Keys) SendToClient(clientId, rawData);
+        clientSocket.Dispose();
     }
 
-    private async void SendToClient(Guid clientId, byte[] rawData)
+    protected override Task<int> ClientSendAsync(Socket clientSocket, byte[] rawData)
     {
-        if (!_clients.TryGetValue(clientId, out var clientSocket)) return;
-        try
-        {
-            await clientSocket.SendAsync(rawData, SocketFlags.None);
-        }
-        catch (Exception)
-        {
-            clientSocket.Dispose();
-            _clients.TryRemove(clientId, out _);
-            _clientCountLabel.Text = $"Tcp客户端:{_clients.Count}";
-        }
+        return clientSocket.SendAsync(rawData, SocketFlags.None);
     }
 }
