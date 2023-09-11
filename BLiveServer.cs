@@ -6,8 +6,6 @@ namespace BLiveTransponder;
 
 internal abstract class BLiveServer<T>
 {
-    internal delegate void ServerEventHandler(string result);
-
     protected readonly ConcurrentDictionary<Guid, T> Clients = new();
     protected readonly bool Enable;
     protected readonly ushort Port;
@@ -80,4 +78,6 @@ internal abstract class BLiveServer<T>
     protected abstract void ClientDispose(T clientSocket);
 
     protected abstract Task ClientSendAsync(T clientSocket, byte[] rawData);
+
+    internal delegate void ServerEventHandler(string result);
 }

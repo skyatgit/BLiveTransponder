@@ -231,7 +231,7 @@ internal static class BLiveBase
 
     internal static byte[] CreateHeartbeatPacket(short version)
     {
-        return CreatePacket(version, ServerOperation.OpHeartbeatReply, Array.Empty<byte>());
+        return CreatePacket(version, ServerOperation.OpHeartbeatReply, ToBigEndianBytes(1));
     }
 
     private static byte[] ToBigEndianBytes(int value)
