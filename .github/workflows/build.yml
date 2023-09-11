@@ -13,10 +13,10 @@ jobs:
     permissions: write-all
 
     steps:
-      - name: Checkout code
+      - name: Checkout Code
         uses: actions/checkout@v3
 
-      - name: Export project
+      - name: Export Project
         id: export
         uses: firebelley/godot-export@v5.2.1
         with:
@@ -24,6 +24,9 @@ jobs:
           godot_export_templates_download_url: https://github.com/godotengine/godot/releases/download/4.1.1-stable/Godot_v4.1.1-stable_mono_export_templates.tpz
           relative_project_path: ./
           use_preset_export_path: true
+
+      - name: Copy License and Readme
+        run: cp LICENSE README.pdf ./Release/Release
 
       - name: Upload Release
         uses: actions/upload-artifact@v3
