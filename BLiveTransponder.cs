@@ -1,7 +1,10 @@
 using System;
+using System.Threading;
+using System.Web;
 using BLiveAPI;
 using Godot;
 using Newtonsoft.Json.Linq;
+using HttpClient = System.Net.Http.HttpClient;
 
 namespace BLiveTransponder;
 
@@ -10,9 +13,11 @@ public partial class BLiveTransponder : Control
     private readonly BLiveApi _api = new();
     private readonly BLiveTcpServer _bLiveTcpServer = new();
     private readonly BLiveWebSocketServer _bLiveWebSocketServer = new();
+    private readonly SemaphoreSlim _semaphore = new(1);
     private CheckButton _connectCheckButton;
     private RichTextLabel _dmRichTextLabel;
     private LoginPanel _loginPanel;
+    private AudioStreamPlayer _player;
     private LineEdit _roomIdLineEdit;
     private Label _tcpClientCountLabel;
     private LinkButton _userLinkButton;
@@ -27,9 +32,11 @@ public partial class BLiveTransponder : Control
         _roomIdLineEdit = GetNode("TopColorRect/RoomIdLineEdit") as LineEdit;
         _tcpClientCountLabel = GetNode("TopColorRect/TcpClientCountLabel") as Label;
         _webSocketClientCountLabel = GetNode("TopColorRect/WebSocketClientCountLabel") as Label;
+        _player = GetNode("AudioStreamPlayer") as AudioStreamPlayer;
         _api.OpSendSmsReply += OpSendSmsReplyEvent;
         _api.OpAuthReply += OpAuthReplyEvent;
         _api.DanmuMsg += DanmuMsgEvent;
+        _api.InteractWord += InteractWordEvent;
         _bLiveTcpServer.ServerStateChange += ServerStateChange;
         _bLiveTcpServer.ClientCountChange += TcpClientCountChange;
         _bLiveWebSocketServer.ServerStateChange += ServerStateChange;
@@ -61,6 +68,7 @@ public partial class BLiveTransponder : Control
         _connectCheckButton.Disabled = false;
         _dmRichTextLabel.Clear();
         _dmRichTextLabel.AddText($"已成功连接至房间:{e.roomId}\n");
+        ReadText($"已成功连接至房间:{e.roomId}");
     }
 
     private async void Toggled(bool connect)
@@ -117,6 +125,13 @@ public partial class BLiveTransponder : Control
     private void DanmuMsgEvent(object sender, (string msg, ulong userId, string userName, int guardLevel, string face, JObject jsonRawData, byte[] rawData) e)
     {
         _dmRichTextLabel.AddText($"{e.userName}:{e.msg}\n");
+        ReadText($"{e.userName}说{e.msg}");
+    }
+
+    private void InteractWordEvent(object sender, (int privilegeType, ulong userId, string userName, JObject jsonRawData, byte[] rawData) e)
+    {
+        _dmRichTextLabel.AddText($"{e.userName} 进入直播间\n");
+        ReadText($"欢迎{e.userName}进入直播间");
     }
 
     [TargetCmd("ALL")]
@@ -125,6 +140,17 @@ public partial class BLiveTransponder : Control
         var data = BLiveBase.CreateSmsPacket(0, e.rawData);
         _bLiveWebSocketServer.SendSmsToClients(data);
         _bLiveTcpServer.SendSmsToClients(data);
+    }
+
+    private async void ReadText(string text)
+    {
+        await _semaphore.WaitAsync();
+        var url = $"https://dict.youdao.com/dictvoice?audio={HttpUtility.UrlEncode(text)}&le=zh";
+        var result = await new HttpClient().GetByteArrayAsync(url);
+        (_player.Stream as AudioStreamMP3)!.Data = result;
+        _player.Play();
+        await ToSignal(_player, "finished");
+        _semaphore.Release();
     }
 
     public override void _Process(double delta)

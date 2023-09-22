@@ -1,8 +1,10 @@
-[gd_scene load_steps=4 format=3 uid="uid://chwtel7hvgv24"]
+[gd_scene load_steps=5 format=3 uid="uid://chwtel7hvgv24"]
 
 [ext_resource type="Script" path="res://BLiveTransponder.cs" id="1_t6hwi"]
 [ext_resource type="Script" path="res://ConfigVBoxContainer.cs" id="2_jgvwk"]
 [ext_resource type="Script" path="res://LoginPanel.cs" id="3_b4f48"]
+
+[sub_resource type="AudioStreamMP3" id="AudioStreamMP3_2wxmc"]
 
 [node name="BLiveTransponder" type="Control"]
 layout_mode = 3
@@ -104,11 +106,11 @@ offset_bottom = -10.0
 scroll_following = true
 metadata/_edit_lock_ = true
 
-[node name="设置" type="TabBar" parent="TabContainer"]
+[node name="系统设置" type="TabBar" parent="TabContainer"]
 visible = false
 layout_mode = 2
 
-[node name="ConfigVBoxContainer" type="VBoxContainer" parent="TabContainer/设置"]
+[node name="ConfigVBoxContainer" type="VBoxContainer" parent="TabContainer/系统设置"]
 layout_mode = 1
 anchors_preset = -1
 anchor_right = 1.0
@@ -121,63 +123,63 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("2_jgvwk")
 
-[node name="Label" type="Label" parent="TabContainer/设置/ConfigVBoxContainer"]
+[node name="Label" type="Label" parent="TabContainer/系统设置/ConfigVBoxContainer"]
 layout_mode = 2
 text = "修改的内容将在下次启动时生效"
 
-[node name="WebSocketServerHBoxContainer" type="HBoxContainer" parent="TabContainer/设置/ConfigVBoxContainer"]
+[node name="WebSocketServerHBoxContainer" type="HBoxContainer" parent="TabContainer/系统设置/ConfigVBoxContainer"]
 layout_mode = 2
 
-[node name="CheckBox" type="CheckBox" parent="TabContainer/设置/ConfigVBoxContainer/WebSocketServerHBoxContainer"]
+[node name="CheckBox" type="CheckBox" parent="TabContainer/系统设置/ConfigVBoxContainer/WebSocketServerHBoxContainer"]
 custom_minimum_size = Vector2(200, 40)
 layout_mode = 2
 text = "启用WebSocket服务器"
 
-[node name="Label" type="Label" parent="TabContainer/设置/ConfigVBoxContainer/WebSocketServerHBoxContainer"]
+[node name="Label" type="Label" parent="TabContainer/系统设置/ConfigVBoxContainer/WebSocketServerHBoxContainer"]
 custom_minimum_size = Vector2(80, 40)
 layout_mode = 2
 text = "端口号："
 horizontal_alignment = 2
 vertical_alignment = 1
 
-[node name="LineEdit" type="LineEdit" parent="TabContainer/设置/ConfigVBoxContainer/WebSocketServerHBoxContainer"]
+[node name="LineEdit" type="LineEdit" parent="TabContainer/系统设置/ConfigVBoxContainer/WebSocketServerHBoxContainer"]
 custom_minimum_size = Vector2(100, 40)
 layout_mode = 2
 placeholder_text = "1~65535"
 max_length = 5
 clear_button_enabled = true
 
-[node name="TcpServerHBoxContainer" type="HBoxContainer" parent="TabContainer/设置/ConfigVBoxContainer"]
+[node name="TcpServerHBoxContainer" type="HBoxContainer" parent="TabContainer/系统设置/ConfigVBoxContainer"]
 layout_mode = 2
 
-[node name="CheckBox" type="CheckBox" parent="TabContainer/设置/ConfigVBoxContainer/TcpServerHBoxContainer"]
+[node name="CheckBox" type="CheckBox" parent="TabContainer/系统设置/ConfigVBoxContainer/TcpServerHBoxContainer"]
 custom_minimum_size = Vector2(200, 40)
 layout_mode = 2
 text = "启用TPC服务器"
 
-[node name="Label" type="Label" parent="TabContainer/设置/ConfigVBoxContainer/TcpServerHBoxContainer"]
+[node name="Label" type="Label" parent="TabContainer/系统设置/ConfigVBoxContainer/TcpServerHBoxContainer"]
 custom_minimum_size = Vector2(80, 40)
 layout_mode = 2
 text = "端口号："
 horizontal_alignment = 2
 vertical_alignment = 1
 
-[node name="LineEdit" type="LineEdit" parent="TabContainer/设置/ConfigVBoxContainer/TcpServerHBoxContainer"]
+[node name="LineEdit" type="LineEdit" parent="TabContainer/系统设置/ConfigVBoxContainer/TcpServerHBoxContainer"]
 custom_minimum_size = Vector2(100, 40)
 layout_mode = 2
 placeholder_text = "1~65535"
 max_length = 5
 clear_button_enabled = true
 
-[node name="SaveHBoxContainer" type="HBoxContainer" parent="TabContainer/设置/ConfigVBoxContainer"]
+[node name="SaveHBoxContainer" type="HBoxContainer" parent="TabContainer/系统设置/ConfigVBoxContainer"]
 layout_mode = 2
 
-[node name="SaveButton" type="Button" parent="TabContainer/设置/ConfigVBoxContainer/SaveHBoxContainer"]
+[node name="SaveButton" type="Button" parent="TabContainer/系统设置/ConfigVBoxContainer/SaveHBoxContainer"]
 custom_minimum_size = Vector2(100, 40)
 layout_mode = 2
 text = "保存"
 
-[node name="ResetButton" type="Button" parent="TabContainer/设置/ConfigVBoxContainer/SaveHBoxContainer"]
+[node name="ResetButton" type="Button" parent="TabContainer/系统设置/ConfigVBoxContainer/SaveHBoxContainer"]
 custom_minimum_size = Vector2(100, 40)
 layout_mode = 2
 text = "重置"
@@ -294,10 +296,13 @@ offset_top = -40.0
 text = "返回"
 metadata/_edit_lock_ = true
 
+[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="."]
+stream = SubResource("AudioStreamMP3_2wxmc")
+
 [connection signal="toggled" from="TopColorRect/ConnectCheckButton" to="." method="Toggled"]
 [connection signal="pressed" from="TopColorRect/UserLinkButton" to="LoginPanel" method="SwitchUi"]
-[connection signal="pressed" from="TabContainer/设置/ConfigVBoxContainer/SaveHBoxContainer/SaveButton" to="TabContainer/设置/ConfigVBoxContainer" method="SaveConfig"]
-[connection signal="pressed" from="TabContainer/设置/ConfigVBoxContainer/SaveHBoxContainer/ResetButton" to="TabContainer/设置/ConfigVBoxContainer" method="ResetConfig"]
+[connection signal="pressed" from="TabContainer/系统设置/ConfigVBoxContainer/SaveHBoxContainer/SaveButton" to="TabContainer/系统设置/ConfigVBoxContainer" method="SaveConfig"]
+[connection signal="pressed" from="TabContainer/系统设置/ConfigVBoxContainer/SaveHBoxContainer/ResetButton" to="TabContainer/系统设置/ConfigVBoxContainer" method="ResetConfig"]
 [connection signal="pressed" from="LoginPanel/QrTextureButton" to="LoginPanel" method="RefreshQr"]
 [connection signal="pressed" from="LoginPanel/CancelButton" to="LoginPanel" method="CancelLogin"]
 [connection signal="pressed" from="LoginPanel/ReturnButton" to="LoginPanel" method="HideUi"]
